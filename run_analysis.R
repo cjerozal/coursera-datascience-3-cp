@@ -1,3 +1,5 @@
+activityColumnName <- "Activity"
+
 # Read in relevant data
 subjectTestData <- read.table("UCI HAR Dataset/test/subject_test.txt", header = FALSE)
 xTestData <- read.table("UCI HAR Dataset/test/X_test.txt", header = FALSE)
@@ -14,18 +16,26 @@ activityData <- rbind(testData, trainingData)
 # Appropriately label the data set with descriptive variable names
 featureMappings <- read.table("UCI HAR Dataset/features.txt", header = FALSE)
 featureMappings <- as.character(featureMappings[,2])
-colnames(activityData) <- c("Subject ID", featureMappings, "Activity")
+colnames(activityData) <- c("Subject ID", featureMappings, activityColumnName)
 
 # Use descriptive activity names to name the activities in the data set
 activityMappings <- read.table("UCI HAR Dataset/activity_labels.txt", header = FALSE)
 activityMappings <- as.character(activityMappings[,2])
 for (index in seq_along(activityMappings)) {
-    activityData[activityData[, "Activity"] == index, "Activity"] <- activityMappings[[index]]
+    activityData[activityData[, activityColumnName] == index, activityColumnName] <- activityMappings[[index]]
 }
 
-
 # Extract only the measurements on the mean and standard deviation for each measurement
+meanAndStdData <- data.frame(activityData[, "Subject ID"], activityData[, activityColumnName])
+for (featureName in featureMappings) {
+    if(grepl("std", featureName) |
+       (grepl("mean", featureName) & !grepl("meanFreq", featureName))) {
+            meanAndStdData[, featureName] <- activityData[, featureName]
+    }
+}
 
 # Create a second, independent tidy data set with the average of each variable for each activity and each subject
+
+
 
 # TODO print out result (with write.table to text file)
