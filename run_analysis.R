@@ -1,4 +1,5 @@
 activityColumnName <- "Activity"
+subjectIdColumnName <- "Subject ID"
 
 # Read in relevant data
 subjectTestData <- read.table("UCI HAR Dataset/test/subject_test.txt", header = FALSE)
@@ -16,7 +17,7 @@ activityData <- rbind(testData, trainingData)
 # Appropriately label the data set with descriptive variable names
 featureMappings <- read.table("UCI HAR Dataset/features.txt", header = FALSE)
 featureMappings <- as.character(featureMappings[,2])
-colnames(activityData) <- c("Subject ID", featureMappings, activityColumnName)
+colnames(activityData) <- c(subjectIdColumnName, featureMappings, activityColumnName)
 
 # Use descriptive activity names to name the activities in the data set
 activityMappings <- read.table("UCI HAR Dataset/activity_labels.txt", header = FALSE)
@@ -26,7 +27,8 @@ for (index in seq_along(activityMappings)) {
 }
 
 # Extract only the measurements on the mean and standard deviation for each measurement
-meanAndStdData <- data.frame(activityData[, "Subject ID"], activityData[, activityColumnName])
+meanAndStdData <- data.frame(activityData[, subjectIdColumnName], activityData[, activityColumnName])
+colnames(meanAndStdData) <- c(subjectIdColumnName, activityColumnName)
 for (featureName in featureMappings) {
     if(grepl("std", featureName) |
        (grepl("mean", featureName) & !grepl("meanFreq", featureName))) {
@@ -35,7 +37,18 @@ for (featureName in featureMappings) {
 }
 
 # Create a second, independent tidy data set with the average of each variable for each activity and each subject
-
+subject <- vector(mode = "numeric")
+activity <- vector(mode = "character")
+dataSplitBySubject <- split(meanAndStdData, meanAndStdData[, subjectIdColumnName])
+for (subjectDF in dataSplitBySubject) {
+    dataSplitByActivity <- split(subjectDF, subjectDF[, activityColumnName])
+    for (activityDF in dataSplitByActivity) {
+        # TODO take avg of all cols of activityDF, and put result in a matrix or something (rbind?)
+    }
+}
+tidyData <- data.frame(subject, activity)
 
 
 # TODO print out result (with write.table to text file)
+
+# TODO fill out readme and code book
