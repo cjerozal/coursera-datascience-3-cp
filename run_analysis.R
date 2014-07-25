@@ -37,11 +37,11 @@
 # }
 
 # Create a second, independent tidy data set with the average of each variable for each activity and each subject
-subject <- vector(mode = "numeric")
-activity <- vector(mode = "character")
-means <- matrix()
+numSubjects <- 30
+tidyDataMatrix <- matrix(nrow = length(activityMappings)*numSubjects, ncol = ncol(meanAndStdData))
+colnames(tidyDataMatrix) <- colnames(meanAndStdData)
 # skip the subject and activity columns when calculating means
-meanNames <- colnames(meanAndStdData)[3:ncol(meanAndStdData)]
+meanNames <- colnames(tidyDataMatrix)[3:ncol(tidyDataMatrix)]
 
 dataSplitBySubject <- split(meanAndStdData, meanAndStdData[, subjectIdColumnName])
 for (currentSubject in names(dataSplitBySubject)) {
@@ -52,20 +52,18 @@ for (currentSubject in names(dataSplitBySubject)) {
     for (activityIndex in seq_along(activityNames)) {
         currentActivity <- activityNames[activityIndex]
         activityDF <- dataSplitByActivity[[currentActivity]]
-        subject <- append(subject, currentSubject)
-        activity <- append(activity, currentActivity)
         rowOfMeans <- vector(mode = "numeric")
         for (colIndex in seq_along(meanNames)) {
             colName <- meanNames[colIndex]
             rowOfMeans[colIndex] <- mean(activityDF[, colName], na.rm = TRUE)
-            #print(colName)
         }
-        
-        # TODO means activityIndex rowOfMeans
+        tidyDataMatrix[activityIndex,] <- c(currentSubject, currentActivity, rowOfMeans)
     }
 }
-tidyData <- data.frame(subject, activity, means)
 
+# TODO argh types
+tidyData <- data.frame(tidyDataMatrix, stringsAsFactors = FALSE, colClasses = c("numeric", "character", rep("numeric", 66)))
+# 
 
 # TODO print out result (with write.table to text file)
 
