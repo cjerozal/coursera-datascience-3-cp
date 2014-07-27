@@ -15,22 +15,18 @@ First the script reads in relevant data from these locations in the original dat
 
 ## Merges the training and the test sets
 
-Then the script combines the three files for training data and for test data into two sets of observations, for training and test data. The training and test data are then combined into one overall set of observations.
+Then the script combines the three files each for training data and for test data into two sets of observations, for training and test data. The training and test data are then combined into one overall set of observations.
 
-## Appropriately labels the data set with descriptive variable names
+## Appropriately labels the data set with descriptive variable names AND Extracts only the measurements on the mean and standard deviation
 
-The feature names are read in from the `features.txt` file in the original data set, and they are assigned to the column names in the activity data frame.
+The feature names are read in from the `features.txt` file in the original data set, and they are assigned to the column names in the data being compiled. The names are cleaned up to be more readable before assigning them as column names in the tidy data.
+
+The variable names are searched for "mean" (but not "meanFreq", as that is not a true mean) and "std", and only those columns containing those words are kept in the overall data set.
 
 ## Uses descriptive activity names to name the activities in the data set
 
-The activity IDs in the activity data frame are replaced with the activity descriptions, from the original `activity_labels.txt` file. `1` becomes `"WALKING"` and so on.
-
-## Extracts only the measurements on the mean and standard deviation
-
-The variable names are searched for "mean" (but not "meanFreq", as that is not a true mean) and "std", and only those columns containing those words are kept in the overall data set.
+The activity IDs in the data are replaced with the activity descriptions, from the original `activity_labels.txt` file. `1` becomes `"WALKING"` and so on.
 
 ## Creates a second, independent tidy data set with the average of each variable for each activity and each subject
 
 Then the mean and standard deviation data are summarized by calculating a mean of each of these 66 measurements per subject and activity combination (30 subjects * 6 activities = 180 rows). The 66 measurement columns are named for what measurements they are the average of. The final tidy data set is saved into the file "tidydata.txt" in the working directory by the script. 
-
-

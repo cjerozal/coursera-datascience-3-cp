@@ -1,39 +1,46 @@
-activityColumnName <- "Activity"
-subjectIdColumnName <- "Subject ID"
+# activityColumnName <- "Activity"
+# subjectIdColumnName <- "Subject ID"
+# 
+# # Read in relevant data
+# subjectTestData <- read.table("UCI HAR Dataset/test/subject_test.txt", header = FALSE)
+# xTestData <- read.table("UCI HAR Dataset/test/X_test.txt", header = FALSE)
+# yTestData <- read.table("UCI HAR Dataset/test/y_test.txt", header = FALSE)
+# subjectTrainData <- read.table("UCI HAR Dataset/train/subject_train.txt", header = FALSE)
+# xTrainData <- read.table("UCI HAR Dataset/train/X_train.txt", header = FALSE)
+# yTrainData <- read.table("UCI HAR Dataset/train/y_train.txt", header = FALSE)
+# 
+# # Merge the training and the test sets to create one data set
+# testData <- cbind(subjectTestData, xTestData, yTestData)
+# trainingData <- cbind(subjectTrainData, xTrainData, yTrainData)
+# activityData <- rbind(testData, trainingData)
 
-# Read in relevant data
-subjectTestData <- read.table("UCI HAR Dataset/test/subject_test.txt", header = FALSE)
-xTestData <- read.table("UCI HAR Dataset/test/X_test.txt", header = FALSE)
-yTestData <- read.table("UCI HAR Dataset/test/y_test.txt", header = FALSE)
-subjectTrainData <- read.table("UCI HAR Dataset/train/subject_train.txt", header = FALSE)
-xTrainData <- read.table("UCI HAR Dataset/train/X_train.txt", header = FALSE)
-yTrainData <- read.table("UCI HAR Dataset/train/y_train.txt", header = FALSE)
-
-# Merge the training and the test sets to create one data set
-testData <- cbind(subjectTestData, xTestData, yTestData)
-trainingData <- cbind(subjectTrainData, xTrainData, yTrainData)
-activityData <- rbind(testData, trainingData)
-
-# Appropriately label the data set with descriptive variable names
+# Appropriately label the data set with descriptive variable names, and
+# Extract only the measurements on the mean and standard deviation for each measurement
+cleanFeatureName <- function(featureName) {
+    cleanFeatureName <- sub("()", "", featureName, fixed = TRUE)
+    cleanFeatureName <- sub("BodyBody", "Body", cleanFeatureName)  # correct mistake in original data
+    cleanFeatureName <- sub("^t", "time", cleanFeatureName)
+    cleanFeatureName <- sub("^f", "freq", cleanFeatureName)
+    cleanFeatureName
+}
 featureMappings <- read.table("UCI HAR Dataset/features.txt", header = FALSE)
 featureMappings <- as.character(featureMappings[,2])
 colnames(activityData) <- c(subjectIdColumnName, featureMappings, activityColumnName)
+meanAndStdData <- data.frame(activityData[, subjectIdColumnName], activityData[, activityColumnName])
+colnames(meanAndStdData) <- c(subjectIdColumnName, activityColumnName)
+for (featureName in featureMappings) {
+    if(grepl("std", featureName) |
+           (grepl("mean", featureName) & !grepl("meanFreq", featureName))) {
+        cleandFeatureName <- cleanFeatureName(featureName)
+        meanAndStdData[, cleandFeatureName] <- activityData[, featureName]
+    }
+}
 
 # Use descriptive activity names to name the activities in the data set
 activityMappings <- read.table("UCI HAR Dataset/activity_labels.txt", header = FALSE)
 activityMappings <- as.character(activityMappings[,2])
 for (index in seq_along(activityMappings)) {
-    activityData[activityData[, activityColumnName] == index, activityColumnName] <- activityMappings[[index]]
-}
-
-# Extract only the measurements on the mean and standard deviation for each measurement
-meanAndStdData <- data.frame(activityData[, subjectIdColumnName], activityData[, activityColumnName])
-colnames(meanAndStdData) <- c(subjectIdColumnName, activityColumnName)
-for (featureName in featureMappings) {
-    if(grepl("std", featureName) |
-       (grepl("mean", featureName) & !grepl("meanFreq", featureName))) {
-            meanAndStdData[, featureName] <- activityData[, featureName]
-    }
+    meanAndStdData[meanAndStdData[, activityColumnName] == index, activityColumnName] <- activityMappings[[index]]
 }
 
 # Create a second, independent tidy data set with the average of each variable for each activity and each subject
