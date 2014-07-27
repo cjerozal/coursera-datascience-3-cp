@@ -19,7 +19,7 @@ Then the script combines the three files each for training data and for test dat
 
 ## Appropriately labels the data set with descriptive variable names AND Extracts only the measurements on the mean and standard deviation
 
-The feature names are read in from the `features.txt` file in the original data set, and they are assigned to the column names in the data being compiled. The names are cleaned up to be more readable before assigning them as column names in the tidy data.
+The feature names are read in from the `features.txt` file in the original data set, and they are assigned to the column names in the data being compiled. The names are cleaned up to be more readable before assigning them as column names in the tidy data. See the included `CodeBook.md` file for more information on the variables.
 
 The variable names are searched for "mean" (but not "meanFreq", as that is not a true mean) and "std", and only those columns containing those words are kept in the overall data set.
 
@@ -29,4 +29,4 @@ The activity IDs in the data are replaced with the activity descriptions, from t
 
 ## Creates a second, independent tidy data set with the average of each variable for each activity and each subject
 
-Then the mean and standard deviation data are summarized by calculating a mean of each of these 66 measurements per subject and activity combination (30 subjects * 6 activities = 180 rows). The 66 measurement columns are named for what measurements they are the average of. The final tidy data set is saved into the file "tidydata.txt" in the working directory by the script. 
+Then the mean and standard deviation data are summarized by calculating a mean of each of these 66 measurements per subject and activity combination (30 subjects * 6 activities = 180 rows). The 66 measurement columns are named for what measurements they are the average of. The final tidy data set is saved into the file `tidydata.txt` in the working directory by the script. 
